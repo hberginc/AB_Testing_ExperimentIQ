@@ -2,9 +2,9 @@
 
 ## Definition
 
-**P-hacking** is the practice — intentional or not — of exploiting researcher degrees of freedom to produce a statistically significant result. It includes: testing multiple metrics and reporting only the significant ones, running multiple variants and selecting the winner, checking results repeatedly until significance is reached, segmenting data until a significant subgroup is found, and switching the primary metric after observing results. Each of these practices inflates the effective false positive rate above the nominal α, producing results that appear significant but are not replicable.
+**P-hacking** is the practice, intentional or not, of exploiting researcher degrees of freedom to produce a statistically significant result. It includes: testing multiple metrics and reporting only the significant ones, running multiple variants and selecting the winner, checking results repeatedly until significance is reached, segmenting data until a significant subgroup is found, and switching the primary metric after observing results. Each of these practices inflates the effective false positive rate above the nominal α, producing results that appear significant but are not replicable.
 
-**Multiple comparisons** is the specific mechanism by which testing many hypotheses simultaneously inflates the experiment-wide false positive rate. Each individual test carries a 5% false positive risk at α = 0.05. When multiple tests are run on the same dataset, these risks compound — the probability that at least one test produces a spurious significant result increases with each additional comparison.
+**Multiple comparisons** is the specific mechanism by which testing many hypotheses simultaneously inflates the experiment-wide false positive rate. Each individual test carries a 5% false positive risk at α = 0.05. When multiple tests are run on the same dataset, these risks compound, the probability that at least one test produces a spurious significant result increases with each additional comparison.
 
 Both are threats to experiment validity that operate silently: the individual test outputs look normal, the p-values are computed correctly, and the significance threshold appears to be respected. The inflation is in the experiment design and analysis choices, not in the arithmetic.
 
@@ -16,7 +16,7 @@ Both are threats to experiment validity that operate silently: the individual te
 
 For a single hypothesis test at α = 0.05, the probability of a false positive is 5%. The probability of not producing a false positive is 95% (0.95).
 
-For k independent tests, the probability that none produces a false positive is 0.95^k. The probability that at least one produces a false positive — the **family-wise error rate (FWER)** — is:
+For k independent tests, the probability that none produces a false positive is 0.95^k. The probability that at least one produces a false positive, the **family-wise error rate (FWER)**, is:
 
 FWER = 1 − (1 − α)^k = 1 − 0.95^k
 
@@ -31,7 +31,7 @@ FWER = 1 − (1 − α)^k = 1 − 0.95^k
 | 20 | 64.2% |
 | 50 | 92.3% |
 
-An experiment tracking 10 metrics simultaneously — a common configuration — operates at an effective false positive rate of approximately 40%, not 5%. With 20 metrics, the probability of at least one spurious significant result exceeds 60%. At this scale, finding a significant result is nearly guaranteed even when no true effects exist.
+An experiment tracking 10 metrics simultaneously, a common configuration, operates at an effective false positive rate of approximately 40%, not 5%. With 20 metrics, the probability of at least one spurious significant result exceeds 60%. At this scale, finding a significant result is nearly guaranteed even when no true effects exist.
 
 ### The Compounding Sources of Multiple Comparisons in A/B Testing
 
@@ -45,7 +45,7 @@ Multiple comparisons in A/B testing arise from several simultaneous sources, eac
 
 **Multiple time windows:** Checking significance at day 3, day 7, and day 14 of an experiment is three comparisons on the same data. See the Early Stopping and Peeking document for the specific inflation this produces.
 
-These sources compound multiplicatively. An experiment with five metrics, two variants, and three time window checks is performing up to 30 simultaneous comparisons — producing a FWER that renders individual significance claims nearly meaningless without correction.
+These sources compound multiplicatively. An experiment with five metrics, two variants, and three time window checks is performing up to 30 simultaneous comparisons, producing a FWER that renders individual significance claims nearly meaningless without correction.
 
 ---
 
@@ -66,7 +66,7 @@ Before the experiment launches, the following must be documented and locked:
 
 ### Why Pre-Registration Controls P-Hacking
 
-Pre-registration does not prevent multiple metrics from being tracked — it prevents the post-hoc selection of whichever metric happened to be significant. When the primary metric is locked before the experiment runs, the result is binary: the pre-registered metric is significant, or it is not. There is no researcher degree of freedom to select a favourable outcome after the fact.
+Pre-registration does not prevent multiple metrics from being tracked, it prevents the post-hoc selection of whichever metric happened to be significant. When the primary metric is locked before the experiment runs, the result is binary: the pre-registered metric is significant, or it is not. There is no researcher degree of freedom to select a favourable outcome after the fact.
 
 A secondary metric that reaches significance when the primary metric does not is a hypothesis for a future experiment, not evidence that the current experiment succeeded.
 
@@ -74,13 +74,13 @@ A secondary metric that reaches significance when the primary metric does not is
 
 Without a pre-registered primary metric, the following failure mode is common and difficult to detect after the fact:
 
-An experiment is launched tracking eight metrics. At analysis, conversion rate (the intended primary) is not significant (p = 0.11). Revenue per user is borderline (p = 0.06). Session depth is significant (p = 0.03). The team reports session depth as the primary finding and recommends shipping. The Ship decision is based on whichever metric was significant — the effective primary metric was selected after observing the data. This is p-hacking regardless of intent.
+An experiment is launched tracking eight metrics. At analysis, conversion rate (the intended primary) is not significant (p = 0.11). Revenue per user is borderline (p = 0.06). Session depth is significant (p = 0.03). The team reports session depth as the primary finding and recommends shipping. The Ship decision is based on whichever metric was significant, the effective primary metric was selected after observing the data. This is p-hacking regardless of intent.
 
 ---
 
 ## The Bonferroni Correction
 
-When multiple comparisons are unavoidable — because multiple variants, multiple metrics, or multiple pre-specified segments are all part of the confirmatory analysis — the significance threshold must be adjusted to maintain the experiment-wide FWER at α = 0.05.
+When multiple comparisons are unavoidable, because multiple variants, multiple metrics, or multiple pre-specified segments are all part of the confirmatory analysis, the significance threshold must be adjusted to maintain the experiment-wide FWER at α = 0.05.
 
 The **Bonferroni correction** is the simplest and most conservative approach:
 
@@ -103,11 +103,11 @@ For an experiment with two variants and three pre-registered metrics (k = 6 comp
 
 ### Limitations of the Bonferroni Correction
 
-The Bonferroni correction is conservative — it reduces the false positive rate below the target α when the tests are correlated, which they typically are in A/B testing (multiple metrics measured on the same users are not independent). This conservatism increases the false negative rate: real effects may fail to reach the adjusted threshold.
+The Bonferroni correction is conservative, it reduces the false positive rate below the target α when the tests are correlated, which they typically are in A/B testing (multiple metrics measured on the same users are not independent). This conservatism increases the false negative rate: real effects may fail to reach the adjusted threshold.
 
 Alternative corrections that account for correlation between tests include:
 - **Holm-Bonferroni:** A stepwise method that is uniformly more powerful than Bonferroni while controlling FWER
-- **Benjamini-Hochberg:** Controls the **false discovery rate (FDR)** rather than FWER — appropriate when the goal is to limit the proportion of false positives among significant results, rather than the probability of any false positive. Preferred in exploratory contexts with many comparisons.
+- **Benjamini-Hochberg:** Controls the **false discovery rate (FDR)** rather than FWER, appropriate when the goal is to limit the proportion of false positives among significant results, rather than the probability of any false positive. Preferred in exploratory contexts with many comparisons.
 
 For A/B testing with a small number of pre-registered comparisons (k ≤ 5), Bonferroni is appropriate and simple to apply. For larger comparison sets or correlated metrics, Holm-Bonferroni or Benjamini-Hochberg should be considered.
 
@@ -120,7 +120,7 @@ Bonferroni corrects for pre-specified multiple comparisons. It does not correct 
 - Segment analyses that were not pre-registered
 - Switching the primary metric after observing results
 
-These are design and analysis failures that correction cannot remediate. The Bonferroni correction is a planned adjustment for a planned analysis — it is not a post-hoc fix for p-hacking.
+These are design and analysis failures that correction cannot remediate. The Bonferroni correction is a planned adjustment for a planned analysis, it is not a post-hoc fix for p-hacking.
 
 ---
 
@@ -143,8 +143,8 @@ An automated system should flag results for review when:
 - No primary metric is documented in the experiment spec prior to launch
 - The reported primary metric differs from the metric specified at experiment design
 - The result summary reports significance in a secondary or guardrail metric but not the primary metric, and uses this as the basis for a Ship recommendation
-- A large number of metrics were tracked (>5) and only one or two are significant — consistent with multiple comparisons inflation
-- Significant results are reported only for specific segments (mobile, new users, one geography) with no significant aggregate result — consistent with segment p-hacking
+- A large number of metrics were tracked (>5) and only one or two are significant, consistent with multiple comparisons inflation
+- Significant results are reported only for specific segments (mobile, new users, one geography) with no significant aggregate result, consistent with segment p-hacking
 - The reported effect is significant at p = 0.03–0.05 in an experiment with many tracked metrics and no documented Bonferroni correction
 
 ---
@@ -154,7 +154,7 @@ An automated system should flag results for review when:
 - **Tracking many metrics and reporting the significant ones:** Even without intent to deceive, selecting the significant metrics post-hoc from a large tracked set is p-hacking. All tracked metrics should be reported, and the primary metric result should be distinguished from secondary findings.
 - **Running segment analyses after observing a non-significant primary result:** Searching for a significant subgroup after the aggregate result fails is the textbook definition of p-hacking. Pre-register segment analyses or treat them as exploratory.
 - **Using a secondary metric as the primary when the primary fails:** The primary metric was selected for a reason. Substituting a secondary metric that happened to be significant redefines success after the fact.
-- **Applying Bonferroni correction only to the metrics that failed:** Selective correction — adjusting the threshold for comparisons that were not significant while leaving the significant one unadjusted — does not control FWER.
+- **Applying Bonferroni correction only to the metrics that failed:** Selective correction, adjusting the threshold for comparisons that were not significant while leaving the significant one unadjusted, does not control FWER.
 - **Treating exploratory findings as confirmatory:** A significant finding in an exploratory analysis is a hypothesis, not a result. It requires a dedicated confirmatory experiment to validate.
 
 ---
@@ -170,6 +170,6 @@ The following must be locked before the experiment launches. Any item missing at
 | Guardrail metrics | Listed with regression thresholds |
 | Statistical test type | One-tailed or two-tailed, with rationale |
 | Planned sample size | Derived from power calculation |
-| Planned duration | Fixed — not subject to interim revision |
+| Planned duration | Fixed, not subject to interim revision |
 | Pre-specified segments | Listed (any others treated as exploratory) |
 | Bonferroni correction | Applied if k > 1 confirmatory comparisons |

@@ -2,11 +2,11 @@
 
 ## Definition
 
-The **novelty effect** is a temporary inflation of a metric caused by user curiosity or behavioural change in response to something new, rather than by the intrinsic value of the change itself. When a variant introduces a visible or experiential difference — a new UI layout, a new feature, a changed flow — a subset of users will engage with it at an elevated rate simply because it is different. This elevated engagement decays as novelty wears off and behaviour returns to baseline.
+The **novelty effect** is a temporary inflation of a metric caused by user curiosity or behavioural change in response to something new, rather than by the intrinsic value of the change itself. When a variant introduces a visible or experiential difference, a new UI layout, a new feature, a changed flow, a subset of users will engage with it at an elevated rate simply because it is different. This elevated engagement decays as novelty wears off and behaviour returns to baseline.
 
-The novelty effect is a **temporal confound**, not a measurement error. The experiment is measuring real behaviour — but the behaviour being measured is a transient response to newness, not a stable response to value. A result driven by novelty will not hold at scale or over time. Shipping on a novelty-inflated result produces a variant whose measured lift does not materialise in post-ship monitoring.
+The novelty effect is a **temporal confound**, not a measurement error. The experiment is measuring real behaviour, but the behaviour being measured is a transient response to newness, not a stable response to value. A result driven by novelty will not hold at scale or over time. Shipping on a novelty-inflated result produces a variant whose measured lift does not materialise in post-ship monitoring.
 
-The inverse — the **familiarity effect** or **change aversion** — also exists: users briefly underperform on a new variant because the change disrupts habitual behaviour, then recover as they adapt. This produces a temporary suppression of the metric that can cause a genuinely good change to appear neutral or negative in the short term. Both directions must be accounted for in experiment duration planning and result interpretation.
+The inverse, the **familiarity effect** or **change aversion**, also exists: users briefly underperform on a new variant because the change disrupts habitual behaviour, then recover as they adapt. This produces a temporary suppression of the metric that can cause a genuinely good change to appear neutral or negative in the short term. Both directions must be accounted for in experiment duration planning and result interpretation.
 
 ---
 
@@ -16,7 +16,7 @@ Not all experiments are equally susceptible. Novelty effect risk is highest when
 
 - **The variant is visually distinct:** Layout changes, redesigns, new navigation structures, or prominent new UI elements are high-risk. Users notice and explore.
 - **The variant introduces a new feature:** First-time exposure to a feature drives engagement that will not be sustained once the feature is familiar.
-- **The affected users are returning or habitual users:** Novelty effect requires prior familiarity with the control experience. New users have no baseline to be disrupted from — the effect is concentrated in returning user segments.
+- **The affected users are returning or habitual users:** Novelty effect requires prior familiarity with the control experience. New users have no baseline to be disrupted from, the effect is concentrated in returning user segments.
 - **The metric is engagement-based:** Click rate, feature interaction, session depth, and time-on-page are more susceptible than conversion rate or revenue, which require user intent beyond curiosity.
 - **The experiment runs for less than two weeks:** Short experiments may capture only the novelty peak without the subsequent decay.
 
@@ -30,7 +30,7 @@ The primary detection method for novelty effect is a **temporal cohort analysis*
 
 ### The Logic
 
-If the measured lift is driven by genuine value, it should be stable across time — users who encounter the variant in week 1 should show similar behaviour to users who encounter it in week 2, once the initial assignment period has passed. If the lift is driven by novelty, week-1 users will show elevated engagement that decays in week 2 as the novelty wears off.
+If the measured lift is driven by genuine value, it should be stable across time, users who encounter the variant in week 1 should show similar behaviour to users who encounter it in week 2, once the initial assignment period has passed. If the lift is driven by novelty, week-1 users will show elevated engagement that decays in week 2 as the novelty wears off.
 
 ### How to Run the Check
 
@@ -38,20 +38,20 @@ Split the variant's user population into two cohorts by assignment date:
 - **Week-1 cohort:** Users assigned in the first 7 days of the experiment
 - **Week-2 cohort:** Users assigned in days 8–14 of the experiment
 
-Compute the primary metric separately for each cohort and compare. Apply the same comparison to the control group to establish a baseline — control metrics should be stable across cohorts by construction, since there is no novelty to decay.
+Compute the primary metric separately for each cohort and compare. Apply the same comparison to the control group to establish a baseline, control metrics should be stable across cohorts by construction, since there is no novelty to decay.
 
 | Cohort | Control Metric | Variant Metric | Lift |
 |---|---|---|---|
 | Week 1 | 4.1% | 5.2% | +1.1pp |
 | Week 2 | 4.0% | 4.2% | +0.2pp |
 
-In this example, the aggregate result would show a significant positive lift. The cohort breakdown reveals that the lift is concentrated in week 1 and has nearly disappeared by week 2 — a strong novelty effect signal.
+In this example, the aggregate result would show a significant positive lift. The cohort breakdown reveals that the lift is concentrated in week 1 and has nearly disappeared by week 2, a strong novelty effect signal.
 
 ### Interpreting the Heuristic
 
 - **Stable lift across cohorts:** No novelty effect signal. The measured lift is likely to persist post-ship.
 - **Declining lift from week 1 to week 2:** Novelty effect is present. The aggregate result overstates the likely steady-state effect.
-- **Increasing lift from week 1 to week 2:** Possible familiarity or learning effect — users improving with the variant over time. This is a positive signal and suggests the aggregate result may understate long-term value.
+- **Increasing lift from week 1 to week 2:** Possible familiarity or learning effect, users improving with the variant over time. This is a positive signal and suggests the aggregate result may understate long-term value.
 - **Negative week-1 lift recovering in week 2:** Change aversion followed by adaptation. The aggregate result may understate true value if the experiment ended before full adaptation.
 
 ### Limitations of the Heuristic
@@ -69,13 +69,13 @@ The week-1 vs. week-2 comparison has structural limitations that must be acknowl
 
 ### When Novelty Effect Is Detected: Do Not Ship on the Aggregate Result
 
-A statistically significant aggregate result that shows strong week-over-week decay in the variant should not be treated as a Ship signal. The measured lift does not represent steady-state behaviour and will not hold post-ship. Shipping on a novelty-inflated result produces a variant whose true long-run effect is the week-2 estimate — or lower — not the aggregate.
+A statistically significant aggregate result that shows strong week-over-week decay in the variant should not be treated as a Ship signal. The measured lift does not represent steady-state behaviour and will not hold post-ship. Shipping on a novelty-inflated result produces a variant whose true long-run effect is the week-2 estimate, or lower, not the aggregate.
 
 The correct decision path when novelty effect is detected:
 
-1. **Use the week-2 estimate as the conservative effect size**, not the aggregate. Evaluate this estimate against the MDE and commercial threshold. If the week-2 estimate clears the threshold, the result may still support a Ship decision — the novelty-inflated week-1 data has not destroyed the finding, it has obscured it.
+1. **Use the week-2 estimate as the conservative effect size**, not the aggregate. Evaluate this estimate against the MDE and commercial threshold. If the week-2 estimate clears the threshold, the result may still support a Ship decision, the novelty-inflated week-1 data has not destroyed the finding, it has obscured it.
 2. **If the week-2 estimate does not clear the threshold:** Extend the experiment to collect more stable data, or Kill if the week-2 estimate is clearly below the commercial threshold and the experiment was adequately powered.
-3. **Do not average the week-1 and week-2 estimates** to produce a "corrected" aggregate. This understates the problem — the week-1 data is not slightly noisy, it is measuring a different behavioural state.
+3. **Do not average the week-1 and week-2 estimates** to produce a "corrected" aggregate. This understates the problem, the week-1 data is not slightly noisy, it is measuring a different behavioural state.
 
 ### When Change Aversion Is Detected: Do Not Kill on the Aggregate Result
 
@@ -92,7 +92,7 @@ The correct decision path:
 Because novelty effect is concentrated in returning users, a useful secondary check is to split results by user type:
 
 - **Returning users showing high lift, new users showing low lift:** Consistent with novelty effect in the returning segment. The new user result is a cleaner estimate of true value for that segment.
-- **New users showing high lift, returning users showing low lift:** Consistent with change aversion in returning users — the new experience may be better for new users but disruptive for those with established habits.
+- **New users showing high lift, returning users showing low lift:** Consistent with change aversion in returning users, the new experience may be better for new users but disruptive for those with established habits.
 
 Neither pattern alone is a Ship or Kill signal, but both inform which segment the variant is serving and whether the aggregate result is representative.
 
@@ -127,6 +127,6 @@ The best response to novelty effect is to design experiments that are long enoug
 | Stable lift week 1 → week 2, clears MDE | Ship |
 | Declining lift week 1 → week 2, week-2 estimate clears MDE | Ship on week-2 estimate with caution |
 | Declining lift week 1 → week 2, week-2 estimate below MDE | Kill or Extend for more stable data |
-| Negative or neutral week 1, improving week 2 | Extend — change aversion, allow adaptation |
+| Negative or neutral week 1, improving week 2 | Extend, change aversion, allow adaptation |
 | Stable non-significant result, adequately powered | Kill (confirmed null, not novelty-driven) |
-| High novelty risk, experiment < 2 weeks | Extend — insufficient duration to assess stability |
+| High novelty risk, experiment < 2 weeks | Extend, insufficient duration to assess stability |

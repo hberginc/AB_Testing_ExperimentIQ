@@ -2,9 +2,9 @@
 
 ## Definition
 
-A **confidence interval (CI)** is a range of plausible values for the true effect of a treatment, estimated from sample data. In practice, treat the CI as the range of effect sizes the data cannot rule out — it tells you **where the true effect likely lives and how precisely it has been measured**. It is the primary tool for assessing whether a statistically significant result is also practically meaningful.
+A **confidence interval (CI)** is a range of plausible values for the true effect of a treatment, estimated from sample data. In practice, treat the CI as the range of effect sizes the data cannot rule out, it tells you **where the true effect likely lives and how precisely it has been measured**. It is the primary tool for assessing whether a statistically significant result is also practically meaningful.
 
-**On the frequentist interpretation:** A 95% CI does **not** mean there is a 95% probability the true value falls within this specific interval — the true value either does or doesn't. The 95% refers to the long-run procedure: if the experiment were repeated many times, 95% of the constructed intervals would contain the true parameter. This distinction matters when communicating results — see the interpretation anti-patterns below.
+**On the frequentist interpretation:** A 95% CI does **not** mean there is a 95% probability the true value falls within this specific interval, the true value either does or doesn't. The 95% refers to the long-run procedure: if the experiment were repeated many times, 95% of the constructed intervals would contain the true parameter. This distinction matters when communicating results, see the interpretation anti-patterns below.
 
 ------
 
@@ -33,7 +33,7 @@ This means:
 **2. What is the width of the interval?**
 
 - Narrow CI → high precision; the estimate is reliable
-- Wide CI → low precision; typically caused by small sample size or high variance. A wide CI on a significant result should be treated with caution — the true effect could be much smaller than the point estimate.
+- Wide CI → low precision; typically caused by small sample size or high variance. A wide CI on a significant result should be treated with caution, the true effect could be much smaller than the point estimate.
 
 **3. Where is the worst-case bound?**
 
@@ -51,9 +51,9 @@ This means:
 | Result                    | CI             | Interpretation                                               |
 | ------------------------- | -------------- | ------------------------------------------------------------ |
 | Lift = +1.5pp, p = 0.01   | [+0.8, +2.2]   | Strong result. Entire interval above zero and above likely MDE. |
-| Lift = +1.5pp, p = 0.04   | [+0.05, +2.95] | Technically significant but wide. Lower bound is near zero — treat with caution. |
+| Lift = +1.5pp, p = 0.04   | [+0.05, +2.95] | Technically significant but wide. Lower bound is near zero, treat with caution. |
 | Lift = +0.02pp, p = 0.003 | [+0.01, +0.03] | Highly significant but commercially meaningless. Large sample inflating power. |
-| Lift = +0.8pp, p = 0.12   | [−0.2, +1.8]   | Not significant. Interval crosses zero — cannot rule out no effect or harm. |
+| Lift = +0.8pp, p = 0.12   | [−0.2, +1.8]   | Not significant. Interval crosses zero, cannot rule out no effect or harm. |
 | Lift = −0.6pp, p = 0.03   | [−1.1, −0.1]   | Significant regression. Shipping this variant would likely cause harm. |
 
 ------
@@ -66,9 +66,9 @@ The CI and p-value are mathematically linked but communicate different things:
 - The p-value answers: *"Is this effect real?"*
 - The CI answers: *"How large is the effect, and how confident are we?"*
 
-**The CI should be the primary output reported** — it contains everything the p-value communicates, plus magnitude and precision. A p-value without a CI strips out the information needed to make a business decision.
+**The CI should be the primary output reported**, it contains everything the p-value communicates, plus magnitude and precision. A p-value without a CI strips out the information needed to make a business decision.
 
-**Note:** In some test configurations — particularly one-tailed tests, ratio metrics, or small samples — the CI and p-value may appear to conflict due to rounding, asymmetry in the underlying distribution, or differences in how the test statistic is computed. If a result shows p < 0.05 but the reported CI includes zero, or vice versa, flag for manual review rather than resolving the conflict by defaulting to one measure.
+**Note:** In some test configurations, particularly one-tailed tests, ratio metrics, or small samples, the CI and p-value may appear to conflict due to rounding, asymmetry in the underlying distribution, or differences in how the test statistic is computed. If a result shows p < 0.05 but the reported CI includes zero, or vice versa, flag for manual review rather than resolving the conflict by defaulting to one measure.
 
 ------
 
@@ -90,8 +90,8 @@ This is why pre-experiment power calculations matter: they define the sample siz
 
 - Reporting the point estimate without the interval
 - Describing a wide-CI result as "strong" because p < 0.05
-- Treating CI width as a significance indicator — it measures precision, not significance
-- Stating "there is a 95% probability the true value is in this range" — see Definition
+- Treating CI width as a significance indicator, it measures precision, not significance
+- Stating "there is a 95% probability the true value is in this range", see Definition
 
 **When escalating or flagging for review, note:**
 

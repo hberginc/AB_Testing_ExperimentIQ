@@ -2,7 +2,7 @@
 
 ## Definition
 
-A **p-value** is the probability of observing results at least as extreme as those measured, assuming the null hypothesis (no difference between variants) is true. It is a measure of evidence against chance — not a measure of effect size, importance, or business value.
+A **p-value** is the probability of observing results at least as extreme as those measured, assuming the null hypothesis (no difference between variants) is true. It is a measure of evidence against chance, not a measure of effect size, importance, or business value.
 
 ------
 
@@ -13,7 +13,7 @@ The conventional threshold is **p < 0.05**, meaning there is less than a 5% prob
 - **p < 0.05** → Statistically significant. The result is unlikely to be noise.
 - **p ≥ 0.05** → Not statistically significant. Insufficient evidence to reject the null hypothesis.
 
-**Important:** p = 0.05 is a convention, not a law. Treat borderline results (e.g., p = 0.048 vs. p = 0.052) with equivalent caution — a result does not become meaningful by crossing an arbitrary line. Results near the threshold should trigger further review rather than a direct ship/no-ship decision.
+**Important:** p = 0.05 is a convention, not a law. Treat borderline results (e.g., p = 0.048 vs. p = 0.052) with equivalent caution, a result does not become meaningful by crossing an arbitrary line. Results near the threshold should trigger further review rather than a direct ship/no-ship decision.
 
 ------
 
@@ -22,7 +22,7 @@ The conventional threshold is **p < 0.05**, meaning there is less than a 5% prob
 P-value interpretation depends on the test type:
 
 - **Two-tailed test**: Detects differences in *either* direction (variant better *or* worse). Standard for most A/B tests where regressions matter.
-- **One-tailed test**: Detects differences in *one* direction only. Produces a smaller p-value for the same data — appropriate only when a negative outcome is explicitly out of scope.
+- **One-tailed test**: Detects differences in *one* direction only. Produces a smaller p-value for the same data, appropriate only when a negative outcome is explicitly out of scope.
 
 Always confirm which test was run before interpreting significance.
 
@@ -50,10 +50,10 @@ This means: **in large experiments, the p-value answers "is this real?" but not 
 
 | Question                                 | Does the p-value answer it?                           |
 | ---------------------------------------- | ----------------------------------------------------- |
-| Is the effect large enough to matter?    | ❌ No — check effect size and confidence interval      |
-| Should we ship this change?              | ❌ No — requires business context                      |
-| Is the null hypothesis true if p ≥ 0.05? | ❌ No — absence of evidence is not evidence of absence |
-| Is this finding reproducible?            | ❌ No — a single p < 0.05 is not confirmation          |
+| Is the effect large enough to matter?    | ❌ No, check effect size and confidence interval      |
+| Should we ship this change?              | ❌ No, requires business context                      |
+| Is the null hypothesis true if p ≥ 0.05? | ❌ No, absence of evidence is not evidence of absence |
+| Is this finding reproducible?            | ❌ No, a single p < 0.05 is not confirmation          |
 
 ------
 
@@ -61,13 +61,13 @@ This means: **in large experiments, the p-value answers "is this real?" but not 
 
 When multiple metrics are tested simultaneously in a single experiment, the probability of observing at least one false positive increases with each additional test. A p < 0.05 threshold on a primary metric is reliable, but the same threshold applied to five secondary metrics means your effective false positive rate is significantly higher than 5%.
 
-When interpreting experiments with multiple metrics, treat secondary metric significance as directional signal rather than confirmation. If a secondary metric drives the ship decision, flag this explicitly — the result warrants additional scrutiny or a follow-up experiment to confirm.
+When interpreting experiments with multiple metrics, treat secondary metric significance as directional signal rather than confirmation. If a secondary metric drives the ship decision, flag this explicitly, the result warrants additional scrutiny or a follow-up experiment to confirm.
 
 ------
 
 ## When to Escalate Rather Than Decide
 
-A p-value alone should trigger further review — rather than a direct decision — when:
+A p-value alone should trigger further review, rather than a direct decision, when:
 
 - The result is borderline (p between 0.04 and 0.07)
 - The effect size is statistically significant but below the pre-defined MDE

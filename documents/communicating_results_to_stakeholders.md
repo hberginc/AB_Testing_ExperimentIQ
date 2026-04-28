@@ -2,29 +2,29 @@
 
 ## Purpose
 
-Statistical outputs — p-values, confidence intervals, power estimates — are the inputs to a decision, not the decision itself. When communicating experiment results to non-technical stakeholders, the primary obligation is to translate those outputs into language that supports a clear, accurate, and actionable conclusion. Precision must be preserved; jargon must not be the vehicle for it.
+Statistical outputs — p-values, confidence intervals, power estimates — are the inputs to a decision, not the decision itself. When communicating experiment results to non-technical stakeholders, the primary objective is to translate those outputs into language that supports a clear, accurate, and actionable conclusion. Precision must be preserved; jargon must not be the vehicle for it.
 
-This document defines how to frame results for non-technical audiences across three communication contexts: clear results that support a definitive recommendation, borderline results that do not, and negative results that require careful framing to prevent misinterpretation.
+This document defines how to frame results for non-technical audiences across three communication contexts: clear results that support a definitive recommendation, borderline results that do not support a definitive recommendation, and negative results that require careful framing to prevent misinterpretation.
 
 ---
 
 ## The Core Communication Principle: Lead with the Recommendation
 
-For most stakeholder communications, the recommendation comes first and the evidence follows. This is the inverse of how statistical analysis is structured — but it is the structure that serves decision-makers.
+For most stakeholder communications, the recommendation comes first and the evidence follows. This is the inverse of how statistical analysis is structured, but it is the structure that serves decision-makers.
 
 **Why this order works:**
 
-Stakeholders need to know what to do before they can evaluate the evidence for doing it. Leading with numbers — "the p-value was 0.03 and the confidence interval was [+0.4pp, +2.0pp]" — requires the reader to interpret the statistics before they know what question the statistics are answering. Leading with the recommendation — "we recommend shipping the variant" — orients the reader and makes the evidence that follows legible.
+Stakeholders need to know what to do before they can evaluate the evidence for doing it. Leading with numbers, "the p-value was 0.03 and the confidence interval was [+0.4pp, +2.0pp]", requires the reader to interpret the statistics before they know what question the statistics are answering. Leading with the recommendation, "we recommend shipping the variant", orients the reader and makes the evidence that follows legible.
 
 The exception is when the result is inconclusive or when the recommendation is against stakeholder expectations. In these cases, the evidence should be laid out first to demonstrate that the conclusion is data-driven before the recommendation is stated. Delivering an unexpected recommendation without evidence leads to the evidence being discounted.
 
 **Standard structure for a clear result:**
 
-1. **Recommendation** — one sentence: ship, kill, or extend, and why in plain terms
-2. **What the experiment tested** — one to two sentences on the hypothesis and change
-3. **What the data showed** — effect size and direction in plain language, without statistical notation
-4. **Confidence in the result** — a plain-language statement of how reliable the finding is
-5. **Next steps** — what happens now, and who owns it
+1. **Recommendation:** one sentence: ship, kill, or extend, and why in plain terms
+2. **What the experiment tested:** one to two sentences on the null hypothesis and change to product
+3. **What the data showed:** effect size and direction in plain language, without statistical notation
+4. **Confidence in the result:** a plain-language statement of how reliable the finding is
+5. **Next steps:** what happens now, and who owns it
 
 ---
 
@@ -32,17 +32,19 @@ The exception is when the result is inconclusive or when the recommendation is a
 
 ### P-Values
 
-P-values should not appear in stakeholder communications without translation. The raw number carries no intuitive meaning for a non-technical audience and frequently produces misinterpretation — either false certainty ("it's 97% likely to be true") or false dismissal ("it's just statistics").
+P-values should not appear in stakeholder communications without translation. The raw number carries no intuitive meaning for a non-technical audience and frequently produces misinterpretation, either false certainty ("it's 97% likely to be true") or false dismissal ("it's just statistics").
 
-**Translations by result type:**
+**Translations by result type:** 
 
 | Statistical Result | Plain Language |
 |---|---|
 | p = 0.002 (highly significant) | "We are highly confident this result is not due to chance. The signal is strong and consistent." |
 | p = 0.03 (significant) | "The result clears the standard confidence threshold. We have sufficient evidence to act." |
 | p = 0.048 (borderline significant) | "The result just clears the threshold, but with limited margin. We have enough evidence to proceed, though the finding is not robust." |
-| p = 0.08 (not significant) | "The data did not produce sufficient evidence of a real effect. This does not mean the variant failed — it means we cannot distinguish its effect from chance at this sample size." |
+| p = 0.08 (not significant) | "The data did not produce sufficient evidence of a real effect. This does not mean the variant failed, it means we cannot distinguish its effect from chance at this sample size." |
 | p = 0.45 (clearly not significant) | "The experiment found no meaningful difference between the variant and control. The evidence points to no real effect." |
+
+*Table signifies significance based on a 0.05 alpha
 
 ### Confidence Intervals
 
@@ -52,7 +54,7 @@ Confidence intervals can be communicated as a range of plausible outcomes withou
 
 For wide intervals: "The result is directionally positive, but we have limited precision on the exact size of the effect. The true improvement could be as small as [lower bound] or as large as [upper bound]."
 
-For intervals that include zero: "The range of plausible effects includes the possibility of no improvement — or even a slight decline. This is why we cannot make a confident recommendation based on this result alone."
+For intervals that include zero: "The range of plausible effects includes the possibility of no improvement, or even a slight decline. This is why we cannot make a confident recommendation based on this result alone."
 
 ### Statistical Power
 
