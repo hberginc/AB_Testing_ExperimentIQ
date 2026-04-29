@@ -54,7 +54,7 @@ try:
     from sentence_transformers import SentenceTransformer
 except ImportError:
     raise ImportError(
-        "\n❌ sentence-transformers not installed.\n"
+        "\n sentence-transformers not installed.\n"
         "   Run: pip install sentence-transformers\n"
         "   Note: this downloads ~80MB model on first run.\n"
     )
@@ -64,12 +64,12 @@ try:
     from chromadb.config import Settings
 except ImportError:
     raise ImportError(
-        "\n❌ chromadb not installed.\n"
+        "\n chromadb not installed.\n"
         "   Run: pip install chromadb\n"
     )
 
 # Import from Task 1
-from day6_task1_chunker import Chunk, chunk_corpus, CORPUS_FOLDER
+from chunker import Chunk, chunk_corpus, CORPUS_FOLDER
 
 
 # ─────────────────────────────────────────────────────────────
@@ -98,10 +98,10 @@ def load_embedding_model(model_name: str = EMBEDDING_MODEL) -> SentenceTransform
     WHAT TO EXPECT ON SUBSEQUENT RUNS:
         Load time: ~1 second (from local cache)
     """
-    print(f"🤖 Loading embedding model: {model_name}")
+    print(f"Loading embedding model: {model_name}")
     print("   (Downloads ~80MB on first run — cached after that)")
     model = SentenceTransformer(model_name)
-    print(f"   ✓ Model loaded. Embedding dimension: {model.get_sentence_embedding_dimension()}")
+    print(f"   ✓ Model loaded. Embedding dimension: {model.get_embedding_dimension()}")
     return model
 
 
