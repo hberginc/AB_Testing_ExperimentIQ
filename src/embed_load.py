@@ -166,10 +166,10 @@ def get_chroma_client(persist: bool = False, db_path: str = CHROMA_DB_PATH):
     if persist:
         os.makedirs(db_path, exist_ok=True)
         client = chromadb.PersistentClient(path=db_path)
-        print(f"💾 ChromaDB: persistent storage at {db_path!r}")
+        print(f"ChromaDB: persistent storage at {db_path!r}")
     else:
         client = chromadb.EphemeralClient()
-        print("🧪 ChromaDB: in-memory (ephemeral) client")
+        print("ChromaDB: in-memory (ephemeral) client")
     return client
 
 
@@ -204,7 +204,7 @@ def load_into_chromadb(
         metadata={"hnsw:space": "cosine"}
     )
 
-    print(f"\n📥 Loading into ChromaDB collection: {collection_name!r}")
+    print(f"\n Loading into ChromaDB collection: {collection_name!r}")
     print(f"   Existing items before load: {collection.count()}")
 
     # Prepare parallel lists for ChromaDB's add() method
@@ -474,7 +474,7 @@ def run_tests():
     print("\n" + "=" * 60)
     print(f"  Results: {passed} passed, {failed} failed")
     if failed == 0:
-        print("  🎉 All tests passed! Embedding pipeline is ready.")
+        print("  All tests passed! Embedding pipeline is ready.")
         print("  Next: run with --persist to build the production DB.")
     else:
         print("  ⚠️  Fix failing tests before integrating with the retriever.")
@@ -488,9 +488,7 @@ def run_tests():
 
 def main(persist: bool = False, query: str = None):
     """Full pipeline: chunk → embed → load → optional test query."""
-    from day6_task1_chunker import chunk_corpus, print_chunk_summary
-
-    print("\n🚀 ExperimentIQ — Day 6, Task 2: Embed + Load ChromaDB\n")
+    from chunker import chunk_corpus, print_chunk_summary
 
     # Step 1: Load and chunk corpus
     chunks = chunk_corpus(CORPUS_FOLDER)
@@ -506,7 +504,7 @@ def main(persist: bool = False, query: str = None):
     client = get_chroma_client(persist=persist)
     collection = load_into_chromadb(chunks, embeddings, client)
 
-    print(f"\n✅ Task 2 complete!")
+
     print(f"   Collection '{COLLECTION_NAME}' contains {collection.count()} chunks.")
     if persist:
         print(f"   Persisted to: {CHROMA_DB_PATH}/")
