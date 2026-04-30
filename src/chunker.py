@@ -1,29 +1,24 @@
 """
-ExperimentIQ — Day 6, Task 1: Document Chunker
-================================================
-Loads corpus documents from a folder, splits them into overlapping chunks,
-and outputs a structured list ready for embedding.
+Document Chunker:
+
+Loads corpus documents --> splits documents into overlapping chunks --> outputs structured list ready to embed
 
 WHY THIS DESIGN:
-- Fixed-size chunking with overlap is the standard for RAG — overlap ensures
+- Fixed-size chunking with overlap is the standard for RAG: overlap ensures
   no sentence is split across two chunks and loses its context.
-- chunk_size=400 tokens ≈ 2-3 paragraphs. Enough context for the LLM to
-  reason from, small enough to stay focused on one concept.
-- chunk_overlap=80 tokens ≈ 20% overlap. The sweet spot — you capture
-  boundary context without duplicating too much content.
-- We tag every chunk with its source doc, chunk index, and char offsets.
-  These metadata fields feed ChromaDB and let you trace every LLM claim
-  back to its source — critical for debugging bad retrievals.
+- Chunk Size Decisioning: Too small (ex. 100-200 chars) will lose context, the LLM gets fragments that don't mean much on their own. Too Large (ex. 800-1K chars) will conver multiple ideas and retrieval will be less presise. Chunk Size around 400 would end up being around 2-3 paragraphs. This should hold enough context for the LLM to reason from and small enough to stay focused on one concept. 
+- Chunk overlap determines how much consecutive chunks share with eachother to capture context from neighboring chunks (around 20% of the chunk size) 
+- Every chunk get's tagged with its source doc, chunk index, and char offsets.
+  These metadata fields feed ChromaDB and let you trace every LLM claim back to its source. 
 
 USAGE:
-    python chunker.py                   # runs on ./corpus/ folder
+    python chunker.py                   # runs on ../documents folder
     python chunker.py --test            # runs built-in tests only
-    python chunker.py --folder my_docs  # custom folder
 
 HOW TO TEST (see bottom of file or run --test flag):
-    1. Unit tests validate chunk size, overlap, and metadata fields
-    2. Inspection tests let you eyeball a real chunk visually
-    3. Edge case tests check empty docs, tiny docs, unicode
+    1. Unit tests: validate chunk size, overlap, and metadata fields
+    2. Inspection tests: eyeball a real chunk visually
+    3. Edge case tests: check empty docs, tiny docs, unicode
 """
 
 import os
@@ -39,9 +34,9 @@ from typing import List, Optional
 # ─────────────────────────────────────────────────────────────
 
 CHUNK_SIZE = 400        # characters (≈ 100 tokens for English text at ~4 chars/token)
-CHUNK_OVERLAP = 80      # characters of overlap between consecutive chunks
+CHUNK_OVERLAP = int(CHUNK_SIZE*0.2 )     # characters of overlap between consecutive chunks
 MIN_CHUNK_SIZE = 50     # discard chunks shorter than this (usually trailing whitespace)
-CORPUS_FOLDER = "../documents"
+CORPUS_FOLDER = "../documents" # location based on chunker.py in src folder locally and corpus in documens folder
 
 
 # ─────────────────────────────────────────────────────────────
@@ -50,7 +45,10 @@ CORPUS_FOLDER = "../documents"
 
 @dataclass
 class Chunk:
-    """A single text chunk with full provenance metadata."""
+    """  
+    Blueprint for a single chunk of text extracted from a corpus document.
+    Contains the chunk content and metadata tracking its source, position, and size.
+    """
     chunk_id: str           # unique ID: "{doc_name}__chunk_{index:04d}"
     source_doc: str         # filename of origin document
     chunk_index: int        # position of this chunk within its document
@@ -67,35 +65,32 @@ class Chunk:
 
 def clean_text(text: str) -> str:
     """
-    Normalize whitespace and remove noise before chunking.
-    - Collapses 3+ newlines to 2 (preserves paragraph breaks, kills whitespace deserts)
-    - Strips leading/trailing whitespace per line
+    Removes noise and trailing whitespace before chunking. 
+    - Collapses 3+ newlines to 2 lines 
     """
-    text = re.sub(r'\n{3,}', '\n\n', text)
-    lines = [line.rstrip() for line in text.splitlines()]
+    text = re.sub(r'\n{3,}', '\n\n', text) # collapse lines
+    lines = [line.rstrip() for line in text.splitlines()] # removes trailing chars in a line
     return '\n'.join(lines).strip()
 
 
-def split_into_chunks(text: str, doc_name: str,
-                      chunk_size: int = CHUNK_SIZE,
-                      overlap: int = CHUNK_OVERLAP) -> List[Chunk]:
+def split_into_chunks(text: str, doc_name: str, chunk_size: int = CHUNK_SIZE) -> List[Chunk]:
     """
-    Splits a document string into overlapping character-based chunks.
+    Splits a document into overlapping character-based chunks.
 
     Strategy: sentence-aware sliding window.
-    - We try to split at sentence boundaries ('. ', '? ', '! ', '\n\n')
-      rather than mid-sentence. This keeps each chunk semantically coherent.
-    - If no sentence boundary found within the window, we fall back to the
-      hard character limit (rare with normal prose).
+    - Split at sentence boundaries ('. ', '? ', '! ', '\n\n')
+      rather than mid-sentence. Chunking at natural positions. 
+    - If no sentence boundary identified within the window, fall back to the
+      hard character limit.
 
     Args:
-        text:       cleaned document text
-        doc_name:   filename used to build chunk_id and source_doc fields
+        text: cleaned document text
+        doc_name: filename used to build chunk_id and source_doc fields
         chunk_size: target max characters per chunk
-        overlap:    how many chars to step back when starting the next chunk
+        overlap: how many chars to step back when starting the next chunk
 
     Returns:
-        List of Chunk objects, in document order
+        List of Chunk objects, in document order 
     """
     if not text or len(text.strip()) < MIN_CHUNK_SIZE:
         return []
