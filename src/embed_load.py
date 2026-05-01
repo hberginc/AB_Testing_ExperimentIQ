@@ -1,35 +1,32 @@
 """
-ExperimentIQ — Day 6, Task 2: Embed + Load ChromaDB
-=====================================================
-Takes the chunks produced by Task 1, generates embeddings using
+Embed + Load ChromaDB:
+Takes the chunks produced by chunker.py, generates encoding/embedding using
 sentence-transformers, and loads them into a persistent ChromaDB collection.
 
 WHY THIS DESIGN:
 - all-MiniLM-L6-v2 is the community default for RAG use cases: fast,
   lightweight (80MB), and strong for semantic similarity on English text.
-  Bigger models (e.g. all-mpnet-base-v2) give marginally better results
-  but are 5x slower — not worth it for a 15-doc knowledge base.
 - We use ChromaDB's EphemeralClient for development (in-memory, zero setup)
   and PersistentClient for production (saves to disk, survives restarts).
   The flag `persist=True` switches between them.
 - We pass metadata (source_doc, chunk_index, word_count) into ChromaDB.
-  This lets your retriever later filter by document — e.g., "only retrieve
-  from statistical methodology docs, not decision framework docs."
-- Batch size of 32 is a safe default — avoids memory spikes on large corpora
+  This lets retriever later filter by document (ex. "only retrieve
+  from statistical methodology docs, not decision framework docs.")
+- Batch size of 32 is a safe default, it avoids memory spikes on large document
   while still being much faster than embedding one chunk at a time.
 
 USAGE:
-    # Standard run (in-memory, good for dev)
-    python day6_task2_embed_load.py
+    # Standard run (in-memory)
+    python  embed_load.py
 
     # Persist to disk (for production use in the app)
-    python day6_task2_embed_load.py --persist
+    python  embed_load.py --persist
 
     # Run tests only
-    python day6_task2_embed_load.py --test
+    python  embed_load.py --test
 
     # Test retrieval after loading
-    python day6_task2_embed_load.py --query "what is statistical power"
+    python  embed_load.py --query "what is statistical power"
 
 PREREQUISITES:
     pip install sentence-transformers chromadb
@@ -149,9 +146,9 @@ def embed_chunks(chunks: List[Chunk], model: SentenceTransformer,
 
 def get_chroma_client(persist: bool = False, db_path: str = CHROMA_DB_PATH):
     """
-    Returns either an in-memory (dev) or persistent (prod) ChromaDB client.
+    Returns either an in-memory or persistent ChromaDB client.
 
-    EPHEMERAL (persist=False):
+    In-Memory (persist=False):
         - Lives in RAM only
         - Wiped when your Python process ends
         - Use during development to avoid stale data issues
@@ -160,7 +157,6 @@ def get_chroma_client(persist: bool = False, db_path: str = CHROMA_DB_PATH):
     PERSISTENT (persist=True):
         - Saved to ./chroma_db/ folder
         - Survives restarts — you only embed once
-        - Use when deploying the Streamlit app
         - Check: ls -la ./chroma_db/ to see the SQLite files
     """
     if persist:
@@ -183,9 +179,9 @@ def load_into_chromadb(
     Loads chunks + embeddings into a ChromaDB collection.
 
     DEDUPLICATION STRATEGY:
-        We use chunk_id as the ChromaDB document ID. If you run this script
-        twice, ChromaDB will raise an error on duplicate IDs — we catch this
-        and give you a clear message. Use --reset flag to wipe and reload.
+        Use chunk_id as the ChromaDB document ID. If you run this script
+        twice, ChromaDB will raise an error on duplicate IDs. Catch this
+        and give a clear message. Use --reset flag to wipe and reload.
 
     METADATA STORED PER CHUNK:
         - source_doc:    which file this came from (for source attribution)
@@ -222,7 +218,7 @@ def load_into_chromadb(
         for c in chunks
     ]
 
-    # Load in batches to avoid memory issues with large corpora
+    # Load in batches to avoid memory issues with large document
     LOAD_BATCH = 100
     for i in range(0, len(chunks), LOAD_BATCH):
         collection.add(
@@ -249,8 +245,8 @@ def query_collection(
     filter_doc: str = None,
 ) -> dict:
     """
-    Runs a semantic search query against the loaded collection.
-    This is the retriever that Phase 3 will call.
+    Runs a search query against the loaded collection.
+    This is the retriever that will get called eventually.
 
     Args:
         collection:  loaded ChromaDB collection
@@ -283,14 +279,14 @@ def query_collection(
 
 def print_query_results(results: dict, query: str):
     """Pretty-print retrieval results for manual inspection."""
-    print(f"\n🔎 Query: {query!r}")
+    print(f"\n Query: {query!r}")
     print(f"   Top {len(results['ids'][0])} results:\n")
     for i, (doc, meta, dist) in enumerate(zip(
         results["documents"][0],
         results["metadatas"][0],
         results["distances"][0],
     )):
-        relevance = "🟢 strong" if dist < 0.5 else "🟡 moderate" if dist < 1.0 else "🔴 weak"
+        relevance = "strong" if dist < 0.5 else "moderate" if dist < 1.0 else "weak"
         print(f"  [{i+1}] Source: {meta['source_doc']}  |  "
               f"Chunk: {meta['chunk_index']}  |  "
               f"Distance: {dist:.4f}  {relevance}")
@@ -298,7 +294,7 @@ def print_query_results(results: dict, query: str):
 
 
 # ─────────────────────────────────────────────────────────────
-# Built-in tests  (run with: python day6_task2_embed_load.py --test)
+# Built-in tests  (run with: python  embed_load.py --test)
 # ─────────────────────────────────────────────────────────────
 
 def run_tests():
@@ -315,14 +311,14 @@ def run_tests():
         (this catches config errors like wrong distance metric)
 
     Pass criteria:
-        ✅ Collection count matches chunk count → no data was dropped
-        ✅ Semantic retrieval works → embeddings loaded in correct order
-        ✅ Metadata present → ChromaDB received all fields
-        ✅ Dedup works → re-load doesn't crash or double-count
-        ✅ Similar text scores lower distance than dissimilar text
+          Collection count matches chunk count → no data was dropped
+          Semantic retrieval works → embeddings loaded in correct order
+          Metadata present → ChromaDB received all fields
+          Dedup works → re-load doesn't crash or double-count
+          Similar text scores lower distance than dissimilar text
     """
     print("=" * 60)
-    print("RUNNING DAY 6 EMBED + LOAD TESTS")
+    print("RUNNING EMBED + LOAD TESTS")
     print("=" * 60)
     passed = 0
     failed = 0
@@ -330,17 +326,16 @@ def run_tests():
     def assert_test(name: str, condition: bool, detail: str = ""):
         nonlocal passed, failed
         if condition:
-            print(f"  ✅ PASS  {name}")
+            print(f"    PASS  {name}")
             passed += 1
         else:
-            print(f"  ❌ FAIL  {name}" + (f"\n          {detail}" if detail else ""))
+            print(f"     FAIL  {name}" + (f"\n          {detail}" if detail else ""))
             failed += 1
 
     # ── Setup: synthetic chunks ───────────────────────────────
-    from day6_task1_chunker import Chunk, split_into_chunks
+    from chunker import Chunk, split_into_chunks
 
-    # These texts are deliberately on different topics so retrieval
-    # can distinguish between them
+    # These texts are deliberately on different topics so retrieval can distinguish between them
     SYNTHETIC_DOCS = [
         ("stats_power",
          "Statistical power is the probability of detecting a true effect when it exists. "
@@ -374,7 +369,7 @@ def run_tests():
     try:
         model = load_embedding_model()
         assert_test("Model loads without error", True)
-        embed_dim = model.get_sentence_embedding_dimension()
+        embed_dim = model.get_embedding_dimension()
         assert_test("Embedding dimension is 384 (all-MiniLM-L6-v2)",
                     embed_dim == 384,
                     f"Got {embed_dim}")
